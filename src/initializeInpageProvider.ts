@@ -19,6 +19,8 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
    * Whether the window.web3 shim should be set.
    */
   shouldShimWeb3?: boolean;
+
+  providerName?: string;
 }
 
 /**
@@ -41,6 +43,7 @@ export function initializeProvider({
   shouldSendMetadata = true,
   shouldSetOnWindow = true,
   shouldShimWeb3 = false,
+  providerName = 'dexEthereum'
 }: InitializeProviderOptions): MetaMaskInpageProvider {
   let provider = new MetaMaskInpageProvider(connectionStream, {
     jsonRpcStreamName,
@@ -55,7 +58,7 @@ export function initializeProvider({
   });
 
   if (shouldSetOnWindow) {
-    setGlobalProvider(provider);
+    setGlobalProvider(provider, providerName);
   }
 
   if (shouldShimWeb3) {
@@ -73,7 +76,10 @@ export function initializeProvider({
  */
 export function setGlobalProvider(
   providerInstance: MetaMaskInpageProvider,
+  providerName = 'dexEthereum'
 ): void {
-  (window as Record<string, any>).ethereum = providerInstance;
-  window.dispatchEvent(new Event('ethereum#initialized'));
+  // (window as Record<string, any>).ethereum = providerInstance;
+  // window.dispatchEvent(new Event('ethereum#initialized'));
+  (window as Record<string, any>)[providerName] = providerInstance;
+  window.dispatchEvent(new Event(`${providerName}#initialized`));
 }
